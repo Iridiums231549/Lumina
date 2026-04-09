@@ -12,3 +12,6 @@
 
 2026.4.2
 完成项目可行性分析报告的补充内容（敏捷开发），已上传已上传至此项目仓库，同步储存在协同网页 ：https://yfna20260320084024397.pingcode.com/wiki/spaces/LUM/pages/ayk2As9S
+
+2026.4.9
+完成实验四：XP开发方法，DevOps，活动图，已上传至此项目仓库，同步储存在协同网页 ：https://yfna20260320084024397.pingcode.com/pjm/projects/BLOG/docs

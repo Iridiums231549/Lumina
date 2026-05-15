@@ -15,3 +15,6 @@
 
 2026.4.9
 完成实验四：XP开发方法，DevOps，活动图，已上传至此项目仓库，同步储存在协同网页 ：https://yfna20260320084024397.pingcode.com/pjm/projects/BLOG/docs
+
+2026.5.15
+完成实验七：SRS软件规格需求文档初版，已上传至此项目仓库，同步储存在协同网页：https://yfna20260320084024397.pingcode.com/wiki/spaces/LUM/pages/MqhHgLdU

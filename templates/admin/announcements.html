@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}公告中心{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>公告中心</h1>
+        </div>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="admin-two-col">
+        <section class="panel-card">
+            <div class="section-head compact">
+                <h3>发布公告</h3>
+            </div>
+            <form method="POST" class="stack-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>
+                    <span>标题</span>
+                    <input type="text" name="title" class="form-control" required>
+                </label>
+                <label>
+                    <span>类型</span>
+                    <select name="kind" class="form-control">
+                        <option value="notice">普通公告</option>
+                        <option value="maintenance">维护公告</option>
+                    </select>
+                </label>
+                <label>
+                    <span>内容</span>
+                    <textarea name="content" class="form-control" rows="6" required></textarea>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" name="is_active" value="1" checked>
+                    <span>创建后立即启用</span>
+                </label>
+                <button type="submit" class="btn btn-primary">发布公告</button>
+            </form>
+        </section>
+
+        <section class="table-card">
+            <div class="section-head compact">
+                <h3>公告列表</h3>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>类型</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for announcement in announcements %}
+                            <tr>
+                                <td>{{ announcement.title }}</td>
+                                <td>{{ announcement.kind }}</td>
+                                <td>{{ '启用中' if announcement.is_active else '已停用' }}</td>
+                                <td>{{ announcement.created_at|format_date }}</td>
+                                <td class="inline-actions wrap">
+                                    <form method="POST" action="{{ url_for('admin_announcement_action', announcement_id=announcement.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="action" value="toggle_active">
+                                        <button type="submit">{{ '停用' if announcement.is_active else '启用' }}</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin_announcement_action', announcement_id=announcement.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="action" value="delete">
+                                        <button type="submit" data-confirm="确定删除这条公告吗？">删除</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

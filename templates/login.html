@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-card">
+        <p class="eyebrow">Welcome Back</p>
+        <h1>登录 Lumina</h1>
+        <p>继续管理你的文章、评论和后台模块。</p>
+        <form method="POST" class="stack-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                <span>用户名或邮箱</span>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </label>
+            <label>
+                <span>密码</span>
+                <input type="password" name="password" class="form-control" required>
+            </label>
+            <button type="submit" class="btn btn-primary full">登录</button>
+        </form>
+        <p class="auth-switch">还没有账号？<a href="{{ url_for('register') }}">立即注册</a></p>
+    </div>
+</section>
+{% endblock %}

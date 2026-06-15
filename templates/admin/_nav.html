@@ -1,0 +1,9 @@
+<nav class="admin-nav">
+    <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">总览</a>
+    <a href="{{ url_for('admin_articles') }}" class="{% if request.endpoint in ['admin_articles', 'admin_article_action'] %}active{% endif %}">文章管理</a>
+    <a href="{{ url_for('admin_users') }}" class="{% if request.endpoint in ['admin_users', 'admin_user_action'] %}active{% endif %}">用户管理</a>
+    <a href="{{ url_for('admin_comments') }}" class="{% if request.endpoint in ['admin_comments', 'admin_comment_action'] %}active{% endif %}">评论治理</a>
+    <a href="{{ url_for('admin_categories') }}" class="{% if request.endpoint in ['admin_categories', 'delete_category'] %}active{% endif %}">分类管理</a>
+    <a href="{{ url_for('admin_announcements') }}" class="{% if request.endpoint in ['admin_announcements', 'admin_announcement_action'] %}active{% endif %}">公告中心</a>
+    <a href="{{ url_for('admin_logs') }}" class="{% if request.endpoint == 'admin_logs' %}active{% endif %}">审计日志</a>
+</nav>

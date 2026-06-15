@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{% if article and article.id %}编辑文章{% else %}写文章{% endif %}{% endblock %}
+{% block content %}
+<section class="panel-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Editor</p>
+            <h1>{% if article and article.id %}编辑文章{% else %}写一篇新文章{% endif %}</h1>
+        </div>
+    </div>
+
+    <div class="editor-grid">
+        <form method="POST" class="panel-card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                <span>标题</span>
+                <input type="text" name="title" class="form-control" value="{{ article.title if article else '' }}" required autofocus>
+            </label>
+            <label>
+                <span>摘要</span>
+                <textarea name="excerpt" class="form-control" rows="3" placeholder="可选，留空则自动提取">{{ article.excerpt if article else '' }}</textarea>
+            </label>
+            <div class="form-grid">
+                <label>
+                    <span>分类</span>
+                    <select name="category_id" class="form-control">
+                        <option value="">未分类</option>
+                        {% for category in categories %}
+                            {% set selected_value = article.category_id|string if article and article.category_id is not none else '' %}
+                            <option value="{{ category.id }}" {% if selected_value == category.id|string or (not article and category.slug == 'uncategorized') %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>状态</span>
+                    <select name="status" class="form-control">
+                        <option value="published" {% if not article or article.status != 'draft' %}selected{% endif %}>发布</option>
+                        <option value="draft" {% if article and article.status == 'draft' %}selected{% endif %}>草稿</option>
+                    </select>
+                </label>
+            </div>
+            <label>
+                <span>标签</span>
+                <input
+                    type="text"
+                    name="tags"
+                    class="form-control"
+                    value="{% if article_tags %}{% for tag in article_tags %}{{ tag.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% elif article and article.tags %}{{ article.tags }}{% endif %}"
+                    placeholder="多个标签请用英文逗号分隔"
+                >
+            </label>
+            <label>
+                <span>正文（支持 Markdown）</span>
+                <textarea name="content" id="content" class="form-control editor-textarea" required>{{ article.content if article else '' }}</textarea>
+            </label>
+            <div class="editor-actions">
+                <button type="submit" class="btn btn-primary">保存文章</button>
+                <button type="button" id="preview-btn" class="btn btn-secondary">预览 Markdown</button>
+            </div>
+        </form>
+
+        <aside class="panel-card preview-card">
+            <div class="section-head compact">
+                <h3>实时预览</h3>
+            </div>
+            <div id="preview-area" class="article-content prose-card muted-preview">
+                <p>点击“预览 Markdown”查看排版效果。</p>
+            </div>
+            <div class="tag-hints">
+                <strong>现有标签建议</strong>
+                <div class="tag-row">
+                    {% for tag in all_tags %}
+                        <span class="tag-pill">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}

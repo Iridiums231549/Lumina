@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}分类管理{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>分类管理</h1>
+        </div>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="admin-two-col">
+        <section class="panel-card">
+            <div class="section-head compact">
+                <h3>新建分类</h3>
+            </div>
+            <form method="POST" class="stack-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>
+                    <span>分类名称</span>
+                    <input type="text" name="name" class="form-control" required>
+                </label>
+                <label>
+                    <span>分类描述</span>
+                    <textarea name="description" class="form-control" rows="4"></textarea>
+                </label>
+                <button type="submit" class="btn btn-primary">创建分类</button>
+            </form>
+        </section>
+
+        <section class="table-card">
+            <div class="section-head compact">
+                <h3>现有分类</h3>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>描述</th>
+                            <th>文章数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td>{{ category.name }}</td>
+                                <td>{{ category.description or '-' }}</td>
+                                <td>{{ category.article_count }}</td>
+                                <td class="inline-actions">
+                                    {% if category.slug == 'uncategorized' %}
+                                        <span>默认分类</span>
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('delete_category', cat_id=category.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" data-confirm="删除后相关内容会转入未分类，确定继续吗？">删除</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}文章管理{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>文章管理</h1>
+        </div>
+        <a href="{{ url_for('create_article') }}" class="btn btn-primary">新建文章</a>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>作者</th>
+                        <th>分类</th>
+                        <th>状态</th>
+                        <th>阅读</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                        <tr>
+                            <td><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></td>
+                            <td>{{ article.username }}</td>
+                            <td>{{ article.category_name or '未分类' }}</td>
+                            <td>{{ article.status_label }}</td>
+                            <td>{{ article.view_count }}</td>
+                            <td class="inline-actions wrap">
+                                <a href="{{ url_for('edit_article', article_id=article.id) }}">编辑</a>
+                                <form method="POST" action="{{ url_for('admin_article_action', article_id=article.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="toggle_top">
+                                    <button type="submit">{{ '取消置顶' if article.is_top else '置顶' }}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_article_action', article_id=article.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="toggle_hidden">
+                                    <button type="submit">{{ '取消隐藏' if article.is_hidden else '隐藏' }}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_article_action', article_id=article.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="{{ 'publish' if article.status == 'draft' else 'draft' }}">
+                                    <button type="submit">{{ '发布' if article.status == 'draft' else '转草稿' }}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_article_action', article_id=article.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" data-confirm="确定永久删除这篇文章吗？">删除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "_pagination.html" %}
+    </div>
+</section>
+{% endblock %}

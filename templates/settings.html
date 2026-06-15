@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}账户设置{% endblock %}
+{% block content %}
+<section class="panel-shell narrow">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Account</p>
+            <h1>账户设置</h1>
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <form method="POST" class="stack-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                <span>用户名</span>
+                <input type="text" class="form-control" value="{{ user.username }}" disabled>
+            </label>
+            <label>
+                <span>昵称</span>
+                <input type="text" name="nickname" class="form-control" value="{{ user.nickname or '' }}">
+            </label>
+            <label>
+                <span>邮箱</span>
+                <input type="email" name="email" class="form-control" value="{{ user.email or '' }}" required>
+            </label>
+            <label>
+                <span>个人简介</span>
+                <textarea name="bio" class="form-control" rows="4">{{ user.bio or '' }}</textarea>
+            </label>
+
+            <div class="divider-line"></div>
+
+            <div class="section-head compact">
+                <h3>修改密码</h3>
+            </div>
+            <label>
+                <span>当前密码</span>
+                <input type="password" name="current_password" class="form-control">
+            </label>
+            <label>
+                <span>新密码</span>
+                <input type="password" name="new_password" class="form-control">
+            </label>
+            <label>
+                <span>确认新密码</span>
+                <input type="password" name="confirm_password" class="form-control">
+            </label>
+
+            <button type="submit" class="btn btn-primary">保存设置</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

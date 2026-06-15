@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block content %}
+<div class="page-layout">
+    <section class="content-column">
+        <div class="category-hero">
+            <p class="eyebrow">Category</p>
+            <h1>{{ category.name }}</h1>
+            <p>{{ category.description or "这个分类下汇聚了相关主题的公开文章。" }}</p>
+        </div>
+
+        {% if articles %}
+            <div class="article-list">
+                {% for article in articles %}
+                    <article class="article-card">
+                        <div class="article-card-main">
+                            <div class="article-meta">
+                                <span>{{ article.created_at|format_date }}</span>
+                                <span>{{ article.comment_count }} 评论</span>
+                                <span>{{ article.like_count }} 点赞</span>
+                            </div>
+                            <h3><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></h3>
+                            <p>{{ article.excerpt }}</p>
+                            <div class="article-foot">
+                                <a href="{{ url_for('profile', username=article.username) }}">{{ article.nickname or article.username }}</a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            {% include "_pagination.html" %}
+        {% else %}
+            <div class="empty-panel">
+                <h3>这个分类下还没有公开文章</h3>
+                <p>可以先发布一篇与该主题相关的内容。</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <aside class="sidebar-column">
+        <section class="sidebar-card">
+            <div class="section-head compact">
+                <h3>全部分类</h3>
+            </div>
+            <ul class="sidebar-list">
+                {% for item in categories %}
+                    <li>
+                        <a href="{{ url_for('category', slug=item.slug) }}" {% if item.id == category.id %}class="is-current"{% endif %}>{{ item.name }}</a>
+                        <span>{{ item.article_count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+</div>
+{% endblock %}

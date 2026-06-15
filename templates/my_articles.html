@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}我的文章{% endblock %}
+{% block content %}
+<section class="content-column full-width">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Workspace</p>
+            <h1>我的文章</h1>
+        </div>
+        <a href="{{ url_for('create_article') }}" class="btn btn-primary">新建文章</a>
+    </div>
+
+    {% if articles %}
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>分类</th>
+                            <th>状态</th>
+                            <th>阅读</th>
+                            <th>评论</th>
+                            <th>点赞</th>
+                            <th>更新时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                            <tr>
+                                <td><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></td>
+                                <td>{{ article.category_name or '未分类' }}</td>
+                                <td>{{ article.status_label }}</td>
+                                <td>{{ article.view_count }}</td>
+                                <td>{{ article.comment_count }}</td>
+                                <td>{{ article.like_count }}</td>
+                                <td>{{ article.updated_at|format_date }}</td>
+                                <td class="inline-actions">
+                                    <a href="{{ url_for('edit_article', article_id=article.id) }}">编辑</a>
+                                    <form method="POST" action="{{ url_for('delete_article', article_id=article.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" data-confirm="确定删除这篇文章吗？">删除</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-panel">
+            <h3>你还没有创建任何文章</h3>
+            <p>先写一篇课程总结、实验记录或功能设计说明吧。</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

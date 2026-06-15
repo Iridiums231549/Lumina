@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}后台总览{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>后台总览</h1>
+        </div>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="stats-grid">
+        <article class="stat-card">
+            <strong>{{ stats.article_count }}</strong>
+            <span>文章总数</span>
+            <small>{{ stats.draft_count }} 篇草稿 / {{ stats.hidden_article_count }} 篇隐藏</small>
+        </article>
+        <article class="stat-card">
+            <strong>{{ stats.user_count }}</strong>
+            <span>用户总数</span>
+            <small>{{ stats.banned_user_count }} 个封禁账号</small>
+        </article>
+        <article class="stat-card">
+            <strong>{{ stats.comment_count }}</strong>
+            <span>评论总数</span>
+            <small>{{ stats.hidden_comment_count }} 条隐藏评论</small>
+        </article>
+        <article class="stat-card">
+            <strong>{{ stats.total_views }}</strong>
+            <span>总阅读量</span>
+            <small>{{ stats.announcement_count }} 条公告记录</small>
+        </article>
+    </div>
+
+    <div class="trend-grid">
+        <div class="trend-card">
+            <span>近 7 日新增用户</span>
+            <strong>{{ trends.new_users }}</strong>
+        </div>
+        <div class="trend-card">
+            <span>近 7 日新增文章</span>
+            <strong>{{ trends.new_articles }}</strong>
+        </div>
+        <div class="trend-card">
+            <span>近 7 日新增评论</span>
+            <strong>{{ trends.new_comments }}</strong>
+        </div>
+        <div class="trend-card">
+            <span>近 7 日审计日志</span>
+            <strong>{{ trends.new_logs }}</strong>
+        </div>
+    </div>
+
+    <div class="admin-two-col">
+        <section class="table-card">
+            <div class="section-head compact">
+                <h3>最新文章</h3>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>作者</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in recent_articles %}
+                            <tr>
+                                <td><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></td>
+                                <td>{{ article.username }}</td>
+                                <td>{{ article.status_label }}</td>
+                                <td>{{ article.created_at|format_date }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="table-card">
+            <div class="section-head compact">
+                <h3>最近操作</h3>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>操作者</th>
+                            <th>动作</th>
+                            <th>对象</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                            <tr>
+                                <td>{{ log.username or '系统' }}</td>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.target_type }}</td>
+                                <td>{{ log.created_at|format_date }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

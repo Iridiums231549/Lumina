@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.nickname or profile_user.username }}{% endblock %}
+{% block content %}
+<section class="profile-hero">
+    <div class="profile-card">
+        <div class="avatar-hero">{{ (profile_user.nickname or profile_user.username)[:1] }}</div>
+        <div>
+            <p class="eyebrow">Profile</p>
+            <h1>{{ profile_user.nickname or profile_user.username }}</h1>
+            <p class="profile-handle">@{{ profile_user.username }}</p>
+            <p class="profile-bio">{{ profile_user.bio or "这个用户还没有填写简介。" }}</p>
+            <div class="profile-stats">
+                <span>{{ article_count }} 篇文章</span>
+                <span>{{ comment_count }} 条评论</span>
+                <span>{{ profile_user.created_at|format_date('%Y-%m-%d') }} 加入</span>
+            </div>
+        </div>
+    </div>
+    {% if current_user and current_user.id == profile_user.id %}
+        <a href="{{ url_for('settings') }}" class="btn btn-secondary">编辑资料</a>
+    {% endif %}
+</section>
+
+<section class="content-column full-width">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Posts</p>
+            <h2>{% if can_view_all %}最近文章与草稿{% else %}最近公开文章{% endif %}</h2>
+        </div>
+    </div>
+    {% if articles %}
+        <div class="article-list">
+            {% for article in articles %}
+                <article class="article-card">
+                    <div class="article-card-main">
+                        <div class="article-meta">
+                            {% if article.category_name %}
+                                <a href="{{ url_for('category', slug=article.category_slug) }}" class="chip">{{ article.category_name }}</a>
+                            {% endif %}
+                            <span>{{ article.status_label }}</span>
+                            <span>{{ article.created_at|format_date }}</span>
+                        </div>
+                        <h3><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></h3>
+                        <p>{{ article.excerpt }}</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-panel compact">
+            <h3>还没有文章</h3>
+            <p>这里会展示该用户最近发布或维护的内容。</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

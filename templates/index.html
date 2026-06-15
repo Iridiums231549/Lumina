@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+{% block content %}
+<section class="hero-panel">
+    <div class="hero-copy">
+        <p class="eyebrow">Lumina Blog System</p>
+        <h1>世界正在我眼前自行展开。</h1>
+        <p class="hero-text">
+            当前版本围绕需求分析文档补齐了公告发布、维护模式、内容治理、账号封禁、统计看板与审计日志，
+            让前台展示和后台管理都能支撑课程验收。
+        </p>
+        <div class="hero-actions">
+            {% if current_user %}
+                <a href="{{ url_for('create_article') }}" class="btn btn-primary">开始创作</a>
+                <a href="{{ url_for('my_articles') }}" class="btn btn-secondary">我的文章</a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary">注册体验</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">登录后台</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="stat-tile">
+            <strong>{{ total_articles }}</strong>
+            <span>公开文章</span>
+        </div>
+        <div class="stat-tile">
+            <strong>{{ categories|length }}</strong>
+            <span>内容分类</span>
+        </div>
+        <div class="stat-tile">
+            <strong>{{ announcements|length }}</strong>
+            <span>在线公告</span>
+        </div>
+    </div>
+</section>
+
+{% if announcements %}
+<section class="notice-grid">
+    {% for notice in announcements %}
+        <article class="notice-card">
+            <div class="notice-meta">
+                <span>系统公告</span>
+                <span>{{ notice.created_at|format_date('%m-%d %H:%M') }}</span>
+            </div>
+            <h3>{{ notice.title }}</h3>
+            <div class="notice-body">{{ notice.html|safe }}</div>
+        </article>
+    {% endfor %}
+</section>
+{% endif %}
+
+<div class="page-layout">
+    <section class="content-column">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Latest Posts</p>
+                <h2>最新发布</h2>
+            </div>
+        </div>
+
+        {% if articles %}
+            <div class="article-list">
+                {% for article in articles %}
+                    <article class="article-card">
+                        <div class="article-card-main">
+                            <div class="article-meta">
+                                {% if article.is_top %}
+                                    <span class="chip chip-hot">置顶</span>
+                                {% endif %}
+                                {% if article.category_name %}
+                                    <a href="{{ url_for('category', slug=article.category_slug) }}" class="chip">{{ article.category_name }}</a>
+                                {% endif %}
+                                <span>{{ article.created_at|format_date }}</span>
+                            </div>
+                            <h3><a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a></h3>
+                            <p>{{ article.excerpt }}</p>
+                            <div class="article-foot">
+                                <a href="{{ url_for('profile', username=article.username) }}">{{ article.nickname or article.username }}</a>
+                                <span>{{ article.view_count }} 阅读</span>
+                                <span>{{ article.comment_count }} 评论</span>
+                                <span>{{ article.like_count }} 点赞</span>
+                            </div>
+                        </div>
+                        {% if article.tags %}
+                            <div class="tag-row">
+                                {% for tag in article.tags %}
+                                    <span class="tag-pill">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+            {% include "_pagination.html" %}
+        {% else %}
+            <div class="empty-panel">
+                <h3>还没有公开文章</h3>
+                <p>可以先从一篇课程总结或技术踩坑记录开始。</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <aside class="sidebar-column">
+        <section class="sidebar-card">
+            <div class="section-head compact">
+                <h3>分类导航</h3>
+            </div>
+            <ul class="sidebar-list">
+                {% for category in categories %}
+                    <li>
+                        <a href="{{ url_for('category', slug=category.slug) }}">{{ category.name }}</a>
+                        <span>{{ category.article_count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="sidebar-card">
+            <div class="section-head compact">
+                <h3>热门文章</h3>
+            </div>
+            <ul class="sidebar-posts">
+                {% for article in top_articles %}
+                    <li>
+                        <a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a>
+                        <span>{{ article.view_count }} 阅读</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+</div>
+{% endblock %}

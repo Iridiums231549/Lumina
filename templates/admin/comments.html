@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}评论治理{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>评论治理</h1>
+        </div>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户</th>
+                        <th>所属文章</th>
+                        <th>内容</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in comments %}
+                        <tr>
+                            <td>{{ comment.username }}</td>
+                            <td><a href="{{ url_for('article_detail', slug=comment.article_slug) }}">{{ comment.article_title }}</a></td>
+                            <td>{{ comment.content[:50] }}{% if comment.content|length > 50 %}...{% endif %}</td>
+                            <td>{{ '已隐藏' if comment.is_hidden else '显示中' }}</td>
+                            <td>{{ comment.created_at|format_date }}</td>
+                            <td class="inline-actions wrap">
+                                <form method="POST" action="{{ url_for('admin_comment_action', comment_id=comment.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="toggle_hidden">
+                                    <button type="submit">{{ '取消隐藏' if comment.is_hidden else '隐藏' }}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_comment_action', comment_id=comment.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" data-confirm="确定删除这条评论吗？">删除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "_pagination.html" %}
+    </div>
+</section>
+{% endblock %}

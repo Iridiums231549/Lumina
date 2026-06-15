@@ -1,0 +1,33 @@
+{% if total_pages > 1 %}
+<nav class="pagination">
+    {% if page > 1 %}
+        {% if category is defined %}
+            <a href="{{ url_for(request.endpoint, slug=category.slug, page=page-1) }}">上一页</a>
+        {% elif query is defined %}
+            <a href="{{ url_for(request.endpoint, q=query, page=page-1) }}">上一页</a>
+        {% else %}
+            <a href="{{ url_for(request.endpoint, page=page-1) }}">上一页</a>
+        {% endif %}
+    {% endif %}
+    {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+            <span class="current">{{ p }}</span>
+        {% elif category is defined %}
+            <a href="{{ url_for(request.endpoint, slug=category.slug, page=p) }}">{{ p }}</a>
+        {% elif query is defined %}
+            <a href="{{ url_for(request.endpoint, q=query, page=p) }}">{{ p }}</a>
+        {% else %}
+            <a href="{{ url_for(request.endpoint, page=p) }}">{{ p }}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page < total_pages %}
+        {% if category is defined %}
+            <a href="{{ url_for(request.endpoint, slug=category.slug, page=page+1) }}">下一页</a>
+        {% elif query is defined %}
+            <a href="{{ url_for(request.endpoint, q=query, page=page+1) }}">下一页</a>
+        {% else %}
+            <a href="{{ url_for(request.endpoint, page=page+1) }}">下一页</a>
+        {% endif %}
+    {% endif %}
+</nav>
+{% endif %}

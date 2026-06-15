@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block content %}
+<div class="article-detail-shell">
+    <section class="article-detail-main">
+        {% if can_preview_unpublished %}
+            <div class="draft-banner">
+                当前文章不是公开状态，你看到的是作者/管理员预览视图。
+            </div>
+        {% endif %}
+
+        <article class="article-frame">
+            <header class="article-header">
+                <div class="article-meta">
+                    {% if article.category_name %}
+                        <a href="{{ url_for('category', slug=article.category_slug) }}" class="chip">{{ article.category_name }}</a>
+                    {% endif %}
+                    {% if article.is_hidden %}
+                        <span class="chip chip-warning">已隐藏</span>
+                    {% endif %}
+                    {% if article.status == 'draft' %}
+                        <span class="chip chip-muted">草稿</span>
+                    {% endif %}
+                    <span>{{ article.created_at|format_date }}</span>
+                    <span>{{ article.view_count }} 阅读</span>
+                </div>
+                <h1>{{ article.title }}</h1>
+                <div class="author-line">
+                    <div class="avatar-xl">{{ (article.nickname or article.username)[:1] }}</div>
+                    <div>
+                        <a href="{{ url_for('profile', username=article.username) }}">{{ article.nickname or article.username }}</a>
+                        <p>@{{ article.username }}</p>
+                    </div>
+                </div>
+                {% if article_tags %}
+                    <div class="tag-row">
+                        {% for tag in article_tags %}
+                            <span class="tag-pill">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </header>
+
+            <div class="article-content prose-card">
+                {{ article_html|safe }}
+            </div>
+
+            <div class="article-actions">
+                {% if current_user %}
+                    <button class="like-button {% if liked %}active{% endif %}" data-article-id="{{ article.id }}">
+                        <span class="like-icon">{% if liked %}♥{% else %}♡{% endif %}</span>
+                        <span class="like-count">{{ like_count }}</span>
+                    </button>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary">登录后点赞</a>
+                {% endif %}
+                {% if current_user and (current_user.id == article.author_id or current_user.role == 'admin') %}
+                    <a href="{{ url_for('edit_article', article_id=article.id) }}" class="btn btn-secondary">编辑文章</a>
+                    <form method="POST" action="{{ url_for('delete_article', article_id=article.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger" data-confirm="确定删除这篇文章吗？">删除文章</button>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+
+        <section class="comments-panel">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Discussion</p>
+                    <h2>评论区</h2>
+                </div>
+                <span>{{ comment_total }} 条互动</span>
+            </div>
+
+            {% if current_user %}
+                <form method="POST" action="{{ url_for('add_comment', article_id=article.id) }}" class="comment-editor">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <textarea name="content" class="form-control" placeholder="写下你的想法..." required></textarea>
+                    <button type="submit" class="btn btn-primary">发表评论</button>
+                </form>
+            {% else %}
+                <div class="empty-inline">
+                    <p>登录后可以发表评论、回复和点赞。</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary">去登录</a>
+                </div>
+            {% endif %}
+
+            {% if comments %}
+                <div class="comment-list">
+                    {% for comment in comments %}
+                        <article class="comment-card">
+                            <div class="comment-head">
+                                <div class="avatar-badge">{{ (comment.nickname or comment.username)[:1] }}</div>
+                                <div>
+                                    <strong>{{ comment.nickname or comment.username }}</strong>
+                                    <p>{{ comment.created_at|format_date }}</p>
+                                </div>
+                            </div>
+                            <div class="comment-body">{{ comment.content }}</div>
+                            <div class="comment-actions">
+                                {% if current_user %}
+                                    <button type="button" class="reply-toggle">回复</button>
+                                {% endif %}
+                                {% if current_user and (current_user.id == comment.user_id or current_user.role == 'admin') %}
+                                    <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" data-confirm="确定删除这条评论吗？">删除</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            {% if current_user %}
+                                <div class="reply-form hidden">
+                                    <form method="POST" action="{{ url_for('add_comment', article_id=article.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                        <textarea name="content" class="form-control" placeholder="回复这条评论..." required></textarea>
+                                        <button type="submit" class="btn btn-secondary">提交回复</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                            {% for reply in replies if reply.parent_id == comment.id %}
+                                <div class="reply-card">
+                                    <div class="comment-head">
+                                        <div class="avatar-badge">{{ (reply.nickname or reply.username)[:1] }}</div>
+                                        <div>
+                                            <strong>{{ reply.nickname or reply.username }}</strong>
+                                            <p>{{ reply.created_at|format_date }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">{{ reply.content }}</div>
+                                </div>
+                            {% endfor %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-panel compact">
+                    <h3>还没有评论</h3>
+                    <p>这篇文章很适合成为第一条互动的开始。</p>
+                </div>
+            {% endif %}
+        </section>
+    </section>
+
+    <aside class="article-detail-side">
+        <section class="sidebar-card">
+            <div class="section-head compact">
+                <h3>作者介绍</h3>
+            </div>
+            <div class="author-summary">
+                <div class="avatar-xl">{{ (article.nickname or article.username)[:1] }}</div>
+                <strong>{{ article.nickname or article.username }}</strong>
+                <p>{{ article.bio or "这个作者还没有填写个人简介。" }}</p>
+                <a href="{{ url_for('profile', username=article.username) }}" class="btn btn-secondary">查看主页</a>
+            </div>
+        </section>
+    </aside>
+</div>
+{% endblock %}

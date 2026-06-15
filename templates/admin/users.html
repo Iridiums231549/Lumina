@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}用户管理{% endblock %}
+{% block content %}
+<section class="admin-shell">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1>用户管理</h1>
+        </div>
+    </div>
+    {% include "admin/_nav.html" %}
+
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>昵称</th>
+                        <th>邮箱</th>
+                        <th>角色</th>
+                        <th>状态</th>
+                        <th>文章</th>
+                        <th>评论</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td><a href="{{ url_for('profile', username=user.username) }}">{{ user.username }}</a></td>
+                            <td>{{ user.nickname or '-' }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>{{ user.status }}</td>
+                            <td>{{ user.article_count }}</td>
+                            <td>{{ user.comment_count }}</td>
+                            <td class="inline-actions wrap">
+                                <form method="POST" action="{{ url_for('admin_user_action', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="toggle_ban">
+                                    <button type="submit">{{ '解封' if user.status == 'banned' else '封禁' }}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_user_action', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="toggle_role">
+                                    <button type="submit">{{ '降为用户' if user.role == 'admin' else '设为管理员' }}</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "_pagination.html" %}
+    </div>
+</section>
+{% endblock %}

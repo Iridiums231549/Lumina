@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}搜索{% endblock %}
+{% block content %}
+<div class="page-layout">
+    <section class="content-column">
+        <div class="search-shell">
+            <p class="eyebrow">Search</p>
+            <h1>搜索内容</h1>
+            <p>可以按文章标题、摘要、正文和标签进行检索。</p>
+        </div>
+
+        {% if query %}
+            <div class="search-result-meta">
+                找到 <strong>{{ total }}</strong> 条与 <span class="search-highlight-term" data-term="{{ query }}">{{ query }}</span> 相关的结果
+            </div>
+            {% if articles %}
+                <div class="article-list">
+                    {% for article in articles %}
+                        <article class="article-card">
+                            <div class="article-card-main">
+                                <div class="article-meta">
+                                    {% if article.category_name %}
+                                        <a href="{{ url_for('category', slug=article.category_slug) }}" class="chip">{{ article.category_name }}</a>
+                                    {% endif %}
+                                    <span>{{ article.created_at|format_date }}</span>
+                                </div>
+                                <h3 class="search-result-title">
+                                    <a href="{{ url_for('article_detail', slug=article.slug) }}">{{ article.title }}</a>
+                                </h3>
+                                <p class="search-result-excerpt">{{ article.excerpt }}</p>
+                                <div class="article-foot">
+                                    <span>{{ article.nickname or article.username }}</span>
+                                    <span>{{ article.comment_count }} 评论</span>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+                {% include "_pagination.html" %}
+            {% else %}
+                <div class="empty-panel compact">
+                    <h3>没有找到匹配内容</h3>
+                    <p>可以换一个关键词，或者试试按标签、课程主题进行搜索。</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-panel">
+                <h3>输入关键词开始搜索</h3>
+                <p>例如：Flask、课程设计、后台治理、Markdown。</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <aside class="sidebar-column">
+        <section class="sidebar-card">
+            <div class="section-head compact">
+                <h3>分类浏览</h3>
+            </div>
+            <ul class="sidebar-list">
+                {% for category in categories %}
+                    <li>
+                        <a href="{{ url_for('category', slug=category.slug) }}">{{ category.name }}</a>
+                        <span>{{ category.article_count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+</div>
+{% endblock %}

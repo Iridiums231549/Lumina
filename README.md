@@ -1,42 +1,49 @@
-# Lumina Blog System
+# Lumina
 
-Lumina 是一个基于 Flask 的博客网站系统，支持：
+Lumina 是一个基于 Flask 的博客网站系统，用于课程项目展示与后续扩展。当前版本已经补齐了前台写作、互动、后台治理与基础部署能力。
+
+## 主要功能
 
 - 用户注册、登录、资料维护、修改密码
 - Markdown 文章创作、草稿管理、分类与标签
 - 评论回复、点赞互动、我的文章
 - 管理员后台、公告中心、用户治理、审计日志
 
-## Local Run
+## 本地运行
 
 ```bash
 python -m pip install -r requirements.txt
 python app.py
 ```
 
-Open:
+浏览器访问：
 
 ```text
 http://127.0.0.1:5000
 ```
 
-## Default Accounts
+## 默认账号
 
-- Admin: `admin / admin123`
-- Demo user: `editor / editor123`
+- 管理员：`admin / admin123`
+- 演示用户：`editor / editor123`
 
-## Deployment
+## 部署相关
 
-This project includes:
+本项目已包含：
 
-- `render.yaml` for Render deployment
-- `部署说明.txt` for Chinese deployment notes
-- `启动公网分享.bat` for temporary public sharing with Cloudflare Tunnel
+- `render.yaml`：Render 正式部署配置
+- `部署说明.txt`：中文部署说明
+- `启动公网分享.bat`：临时公网分享脚本
 
-For a long-term public deployment, use Render with the included persistent disk
-configuration so the SQLite database is not lost after restarts or redeploys.
+如果需要长期公网运行，推荐使用 Render，并使用项目中已经配置好的持久化磁盘方案，避免 SQLite 数据在重启或重新部署后丢失。
 
-## Important Note
+## 项目过程记录
 
-GitHub is used for source hosting and version control.
-For a permanent public website, deploy this Flask app to a Python hosting platform such as Render.
+- 2026-03-20：完成项目可行性分析报告，并上传至仓库与协同平台
+- 2026-04-02：补充可行性分析报告中的敏捷开发相关内容
+- 2026-04-09：完成实验四相关内容，包括 XP、DevOps、活动图
+- 2026-05-15：完成实验七 SRS 软件需求规格说明书初版
+
+## 说明
+
+GitHub 负责源代码托管与版本管理；如果要形成长期稳定的网址，需要将该 Flask 项目部署到 Python 应用托管平台，例如 Render。
